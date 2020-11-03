@@ -67,7 +67,35 @@ def statistics(path, level_num):
         sum_files += len(allfileL)
     print 'sum files = %d' % sum_files
 
+def labelDoubleline():
+    tcp_3G = '/home/wanwenkai/sourceData/TCP-3G/first84h/first84h-30s-label-doubleline'
+    tcp_4G = '/home/wanwenkai/sourceData/TCP-4G/first84h/first84h-30s-label-doubleline'
+    tcp = '/home/wanwenkai/sourceData/TCP/first84h/'
+
+    tcpL = []
+    tcpL.append(tcp_3G)
+    tcpL.append(tcp_4G)
+
+    tcp_labeln = 'first84h-30s-label-doubleline'
+    tcp_label = os.path.join(tcp, tcp_labeln)
+    
+    for tcpset in tcpL:
+        for downlink in os.listdir(tcpset):
+            dp = os.path.join(tcpset, downlink)
+            dstdp = os.path.join(tcp_label, downlink)
+            if not os.path.exists(dstdp):
+                os.makedirs(dstdp)
+            for txt in os.listdir(dp):
+                filep = os.path.join(dp, txt)
+                dstfilep = os.path.join(dstdp, txt)
+                shutil.copyfile(filep, dstfilep)
+     
+    statistics(tcp_label, 36)
+    
+    #allfileL = glob.glob(tcp + '*.txt')
+    #print len(allfileL)
+
 if __name__ == '__main__':
     #combine TCP-3G and TCP-4G
-    main()
-
+    #main()
+    labelDoubleline()

@@ -126,7 +126,7 @@ def cutSession(runtime, datap, cuted_session):
                             tL.append(time)
                             bL.append(byte)
                                 
-                        elif len(tL)!=0 and (end_time0-runtime*(num-1)) >= 5.0:
+                        elif bL[0] != 0.0 and bL[-1] != 0.0:
                             
                             file_name = txt.split('.txt')[0] + '_' + str(num) + '.txt'
                             
@@ -151,7 +151,7 @@ def cutSession(runtime, datap, cuted_session):
                             num += 1
                             sumcutnum += 1
                         else:
-                            print '%d cannot enough time end_time0 = %.2f %.2f' % (num, end_time0, end_time0-runtime*(num-1))
+                            print '%d start%.2f end%.2f' % (num, bL[0], bL[-1])
                             tL = []
                             bL = []
                             sum_b = 0.0 
@@ -196,42 +196,45 @@ def getFirst(providerp, firstp, cut_ftime):
                 fd.close()
                 print ' aleady cut first %dh' % cut_ftime
 
-def divideLevel(stro_dirp, double_nolevel):
+def divideLevel(sto_dirp, double_nolevel):
     unitLevel = 131072
     
     for aset in os.listdir(double_nolevel):
-        print 'This is %s, please wait patiently!' % aset
-        fileL = []
-        bdL = []
-        nolevel_train = os.path.join(double_nolevel, aset)
+        if aset.endswith('label'):
+            print 'This is %s, please wait patiently!' % aset
+            fileL = []
+            bdL = []
+            nolevel_train = os.path.join(double_nolevel, aset)
 
-        for filen in os.listdir(nolevel_train):
-            #print filen,
-            filep = os.path.join(nolevel_train, filen)
-            bd = countbd(filep)
-            fileL.append(filep)
-            bdL.append(bd)
-        levelnum = int(max(bdL)/unitLevel)
+            for filen in os.listdir(nolevel_train):
+                #print filen,
+                filep = os.path.join(nolevel_train, filen)
+                bd = countbd(filep)
+                fileL.append(filep)
+                bdL.append(bd)
+            levelnum = int(max(bdL)/unitLevel)
 
-        div_set = sto_dirp.split('/')[-1]+'-30s-'+str(levelnum)+'level-'+ aset
-        print div_set
-        print 'maxbd = %.2fbyte/s (%.2fMbps)' % (max(bdL), max(bdL)*8/1024/1024)
-        print 'unit of level = %.2fbyte/s (%.2fMbps)' % (unitLevel, unitLevel*8.0/1024.0/1024.0)
+            #div_set = sto_dirp.split('/')[-1]+'-30s-'+str(levelnum)+'level-'+ aset
+            div_set = sto_dirp.split('/')[-1]+'-30s-label-doubleline'
+            print div_set
+            print 'maxbd = %.2fbyte/s (%.2fMbps)' % (max(bdL), max(bdL)*8/1024/1024)
+            print 'unit of level = %.2fbyte/s (%.2fMbps)' % (unitLevel, unitLevel*8.0/1024.0/1024.0)
         
-        divp = os.path.join(sto_dirp, div_set)
-        for i in range(len(bdL)):
-            level = bdL[i]//unitLevel
-            if level > levelnum - 1:
-                level = levelnum - 1
-            downlink = 'downlink_'+str(int(level*100000))
-            dividep = os.path.join(divp, downlink)
-            if not os.path.exists(dividep):
-                os.makedirs(dividep)
-            divideFp = os.path.join(dividep, fileL[i].split('/')[-1]) 
-            if aset == 'train':
-                shutil.copyfile(fileL[i], divideFp)
-            else:
-                double_to_single(fileL[i], divideFp)
+            divp = os.path.join(sto_dirp, div_set)
+            for i in range(len(bdL)):
+                level = bdL[i]//unitLevel
+                if level > levelnum - 1:
+                    level = levelnum - 1
+                downlink = 'downlink_'+str(int(level*100000))
+                dividep = os.path.join(divp, downlink)
+                if not os.path.exists(dividep):
+                    os.makedirs(dividep)
+                divideFp = os.path.join(dividep, fileL[i].split('/')[-1]) 
+                if aset == 'train':
+                    shutil.copyfile(fileL[i], divideFp)
+                else:
+                    #double_to_single(fileL[i], divideFp)
+                    shutil.copyfile(fileL[i], divideFp)
     
         statistics(divp, levelnum) 
 
@@ -267,7 +270,7 @@ def double_to_single(transfiles_path, dst_label_filespath):
 if __name__ == '__main__':
     origin = '/home/wanwenkai/origin-trace'
     root = '/home/wanwenkai/sourceData'
-    provider = 'TCP-4G'
+    provider = 'TCP-3G'
     cut_ftime = 84  #h
     
     ori_pro = os.path.join(origin, provider)
@@ -277,10 +280,11 @@ if __name__ == '__main__':
     sto_dirp = os.path.join(sto_p, sto_dir)
     
     session = 30   #s
-    cuted_session = 'first'+str(cut_ftime)+'h-'+str(session)+'s-doubleline-nolevel'
+    cuted_session = 'first'+str(cut_ftime)+'h-'+str(session)+'s-nolevel-doubleline'
     cuted_sessionp = os.path.join(sto_dirp, cuted_session)
+   
     #please separate run the function as following
-    
-    getFirst(ori_pro, sto_dirp, cut_ftime)
+    #getFirst(ori_pro, sto_dirp, cut_ftime)
     cutSession(session, sto_dirp, cuted_sessionp)
-    divideLevel(sto_dirp, cuted_sessionp)
+    #divideLevel(sto_dirp, cuted_sessionp)
+    #double_to_single(transfiles_path, dst_label_filespath):

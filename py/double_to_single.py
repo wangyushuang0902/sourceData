@@ -29,6 +29,6 @@ def doubleToSingle(transfiles_path, dst_label_filespath):
     print sum_b/time_new
 
 if __name__ == '__main__':
-    double = '/home/wanwenkai/sourceData/downlink_500000/proUDP_387040.txt'
-    single = '/home/wanwenkai/sourceData/downlink_500000/proUDP_387040.trace'
+    double = '/home/wanwenkai/sourceData/first84h-NewFile-HighDensity-4GMobile-ms_1897.txt'
+    single = '/home/wanwenkai/sourceData/first84h-NewFile-HighDensity-4GMobile-ms_1897.trace'
     doubleToSingle(double, single)
