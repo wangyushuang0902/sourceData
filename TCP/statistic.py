@@ -1,12 +1,12 @@
 import os
 
 def main():
-    path = '/home/wanwenkai/sourceData/TCP/first84h/first84h-30s-80level-train'
-    print 'train bandwidth 0'
+    path = '/home/wanwenkai/sourceData/TCP/first84h-not-filter/first84h-not-filter-60s-69level-train'
+    #print 'train bandwidth 0'
     sumi = 0
     sum0 = 0
     sum0end = 0
-    dL = range(80)
+    dL = range(69)
     for d in dL:
         down = 'downlink_' + str(d*100000)
         j = 0 

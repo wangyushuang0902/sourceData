@@ -93,8 +93,8 @@ def cutSession(runtime, datap, cuted_session):
         os.makedirs(temp_train)
     if not os.path.exists(temp_label):
         os.makedirs(temp_label)
-    print temp_train
-    print temp_label
+    
+    print 'session for %ds put in:\n   %s\n   %s' % (runtime, temp_train, temp_label)
 
     sum3600num = 0
     sumcutnum = 0
@@ -102,7 +102,7 @@ def cutSession(runtime, datap, cuted_session):
     for c in os.listdir(datap):       
         if c.endswith('oricuted'):
             sourceDir = os.path.join(datap, c) 
-            print sourceDir
+            #print sourceDir
             for txt in os.listdir(sourceDir):
                 filespath = os.path.join(sourceDir, txt)
                 
@@ -126,8 +126,8 @@ def cutSession(runtime, datap, cuted_session):
                             tL.append(time)
                             bL.append(byte)
                                 
-                        elif bL[0] != 0.0 and bL[-1] != 0.0:
-                            
+                        #elif bL[0] != 0.0 and bL[-1] != 0.0:
+                        else:    
                             file_name = txt.split('.txt')[0] + '_' + str(num) + '.txt'
                             
                             #put in train-set
@@ -150,30 +150,30 @@ def cutSession(runtime, datap, cuted_session):
                             sum_b = 0.0 
                             num += 1
                             sumcutnum += 1
+                        '''
                         else:
-                            print '%d start%.2f end%.2f' % (num, bL[0], bL[-1])
+                            #print '%d start%.2f end%.2f' % (num, bL[0], bL[-1])
                             tL = []
                             bL = []
                             sum_b = 0.0 
                             num += 1
+                        '''
                     #if sumcutnum > 8176:
                     #    break
                 sum3600num += 1
                 print ' %d' % (num-1)
-    print 'complete file num = %d' % sum3600num
-    print 'cut file num = %d' % sumcutnum
-    print 'cut is done!'
+    print '   complete file num = %d' % sum3600num
+    print '   cut file num = %d' % sumcutnum
+    print '   cut is done!'
    
 def getFirst(providerp, firstp, cut_ftime):
-    print providerp
     cuted = os.path.join(firstp, 'oricuted')
     
     if not os.path.exists(cuted):
         os.makedirs(cuted)
-    print cuted
-    #for item in os.listdir(providerp):
-        #if item.endswith('origin'):
-            #origin = os.path.join(providerp, item)
+    
+    print 'Intercepting a txt file of the previous %d hours\nput in folder: %s' % (cut_ftime, cuted)
+    
     for ori in os.listdir(providerp):
         if ori.endswith('readyCut'):
             ready_cut = os.path.join(providerp, ori)
@@ -198,44 +198,60 @@ def getFirst(providerp, firstp, cut_ftime):
 
 def divideLevel(sto_dirp, double_nolevel):
     unitLevel = 131072
-    
-    for aset in os.listdir(double_nolevel):
-        if aset.endswith('label'):
-            print 'This is %s, please wait patiently!' % aset
-            fileL = []
-            bdL = []
-            nolevel_train = os.path.join(double_nolevel, aset)
+    asetL = ['train', 'label']
+    #for aset in os.listdir(double_nolevel):
+    for aset in asetL:
+        #if aset == 'train':
+        #    continue
+        print 'This is %s, please wait patiently!' % aset
+        fileL = []
+        bdL = []
+        nolevel_train = os.path.join(double_nolevel, aset)
 
-            for filen in os.listdir(nolevel_train):
-                #print filen,
-                filep = os.path.join(nolevel_train, filen)
-                bd = countbd(filep)
-                fileL.append(filep)
-                bdL.append(bd)
-            levelnum = int(max(bdL)/unitLevel)
+        for filen in os.listdir(nolevel_train):
+            #print filen,
+            filep = os.path.join(nolevel_train, filen)
+            bd = countbd(filep)
+            fileL.append(filep)
+            bdL.append(bd)
+        levelnum = int(max(bdL)/unitLevel)
 
-            #div_set = sto_dirp.split('/')[-1]+'-30s-'+str(levelnum)+'level-'+ aset
-            div_set = sto_dirp.split('/')[-1]+'-30s-label-doubleline'
-            print div_set
-            print 'maxbd = %.2fbyte/s (%.2fMbps)' % (max(bdL), max(bdL)*8/1024/1024)
-            print 'unit of level = %.2fbyte/s (%.2fMbps)' % (unitLevel, unitLevel*8.0/1024.0/1024.0)
+        div_set = sto_dirp.split('/')[-2]+'-'+str(session)+'s-'+str(levelnum)+'level-'+ aset
+        if aset == 'label':
+            label_doublen = sto_dirp.split('/')[-2]+'-'+str(session)+'s-label-doubleline'
         
-            divp = os.path.join(sto_dirp, div_set)
-            for i in range(len(bdL)):
-                level = bdL[i]//unitLevel
-                if level > levelnum - 1:
-                    level = levelnum - 1
-                downlink = 'downlink_'+str(int(level*100000))
-                dividep = os.path.join(divp, downlink)
-                if not os.path.exists(dividep):
-                    os.makedirs(dividep)
-                divideFp = os.path.join(dividep, fileL[i].split('/')[-1]) 
-                if aset == 'train':
-                    shutil.copyfile(fileL[i], divideFp)
-                else:
-                    #double_to_single(fileL[i], divideFp)
-                    shutil.copyfile(fileL[i], divideFp)
-    
+        print div_set
+        print 'maxbd = %.2fbyte/s (%.2fMbps)' % (max(bdL), max(bdL)*8/1024/1024)
+        print 'unit of level = %.2fbyte/s (%.2fMbps)' % (unitLevel, unitLevel*8.0/1024.0/1024.0)
+        
+        divp = os.path.join(sto_dirp, div_set)
+        if aset == 'label':
+            label_doublep = os.path.join(sto_dirp, label_doublen)
+            print 'dst_double_path %s' % label_doublep
+            print 'dst_single_path %s' % divp
+            
+        for i in range(len(bdL)):
+            level = bdL[i]//unitLevel
+            if level > levelnum - 1:
+                level = levelnum - 1
+            downlink = 'downlink_'+str(int(level*100000))
+            dividep = os.path.join(divp, downlink)
+            
+            if not os.path.exists(dividep):
+                os.makedirs(dividep)
+            divideFp = os.path.join(dividep, fileL[i].split('/')[-1]) 
+            
+            if aset == 'train':
+                shutil.copyfile(fileL[i], divideFp)
+            else:
+                label_double_down = os.path.join(label_doublep, downlink)
+                if not os.path.exists(label_double_down):
+                    os.makedirs(label_double_down)
+                label_double_file = os.path.join(label_double_down, fileL[i].split('/')[-1])
+                shutil.copyfile(fileL[i], label_double_file)
+                double_to_single(fileL[i], divideFp)
+
+
         statistics(divp, levelnum) 
 
 def double_to_single(transfiles_path, dst_label_filespath):
@@ -276,15 +292,16 @@ if __name__ == '__main__':
     ori_pro = os.path.join(origin, provider)
     
     sto_p = os.path.join(root, provider)
-    sto_dir = 'first' + str(cut_ftime) + 'h'
-    sto_dirp = os.path.join(sto_p, sto_dir)
+    sto_ftn = 'first' + str(cut_ftime) + 'h-not-filter'
+    sto_ft = os.path.join(sto_p, sto_ftn)
     
-    session = 30   #s
-    cuted_session = 'first'+str(cut_ftime)+'h-'+str(session)+'s-nolevel-doubleline'
-    cuted_sessionp = os.path.join(sto_dirp, cuted_session)
+    session = 60  #s
+    sto_sess = os.path.join(sto_ft, str(session)+'s')
+    cuted_sessn = 'first'+str(cut_ftime)+'h-'+str(session)+'s-nolevel-doubleline'
+    cuted_sess = os.path.join(sto_sess, cuted_sessn)
    
     #please separate run the function as following
-    #getFirst(ori_pro, sto_dirp, cut_ftime)
-    cutSession(session, sto_dirp, cuted_sessionp)
-    #divideLevel(sto_dirp, cuted_sessionp)
-    #double_to_single(transfiles_path, dst_label_filespath):
+    
+    #getFirst(ori_pro, sto_ft, cut_ftime)
+    #cutSession(session, sto_ft, cuted_sess)
+    divideLevel(sto_sess, cuted_sess)

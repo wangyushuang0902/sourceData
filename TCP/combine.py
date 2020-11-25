@@ -3,14 +3,14 @@ import shutil
 import glob
 
 def main():
-    tcp_3G = '/home/wanwenkai/sourceData/TCP-3G/first84h/'
-    tcp_4G = '/home/wanwenkai/sourceData/TCP-4G/first84h/'
-    tcp = '/home/wanwenkai/sourceData/TCP/first84h/'
+    tcp_3G = '/home/wanwenkai/sourceData/TCP-3G/first84h-not-filter/60s'
+    tcp_4G = '/home/wanwenkai/sourceData/TCP-4G/first84h-not-filter/60s'
+    tcp = '/home/wanwenkai/sourceData/TCP/first84h-not-filter/'
 
-    tcp_3G_train = os.path.join(tcp_3G, 'first84h-30s-8level-train')
-    tcp_3G_label = os.path.join(tcp_3G, 'first84h-30s-6level-label')
-    tcp_4G_train = os.path.join(tcp_4G, 'first84h-30s-80level-train')
-    tcp_4G_label = os.path.join(tcp_4G, 'first84h-30s-36level-label')
+    tcp_3G_train = os.path.join(tcp_3G, 'first84h-not-filter-60s-8level-train')
+    tcp_3G_label = os.path.join(tcp_3G, 'first84h-not-filter-60s-6level-label')
+    tcp_4G_train = os.path.join(tcp_4G, 'first84h-not-filter-60s-69level-train')
+    tcp_4G_label = os.path.join(tcp_4G, 'first84h-not-filter-60s-33level-label')
     
     tcpL = []
     tcpL.append(tcp_3G_train)
@@ -18,12 +18,13 @@ def main():
     tcpL.append(tcp_4G_train)
     tcpL.append(tcp_4G_label)
 
-    tcp_trainn = 'first84h-30s-80level-train'
-    tcp_labeln = 'first84h-30s-36level-label'
+    tcp_trainn = 'first84h-not-filter-60s-69level-train'
+    tcp_labeln = 'first84h-not-filter-60s-33level-label'
     tcp_train = os.path.join(tcp, tcp_trainn)
     tcp_label = os.path.join(tcp, tcp_labeln)
-    '''
+    
     for tcpset in tcpL:
+        
         if tcpset.endswith('train'):        
             for downlink in os.listdir(tcpset):
                 dp = os.path.join(tcpset, downlink)
@@ -34,6 +35,7 @@ def main():
                     filep = os.path.join(dp, txt)
                     dstfilep = os.path.join(dstdp, txt)
                     shutil.copyfile(filep, dstfilep)
+    
         if tcpset.endswith('label'):
             for downlink in os.listdir(tcpset):
                 dp = os.path.join(tcpset, downlink)
@@ -44,9 +46,9 @@ def main():
                     filep = os.path.join(dp, txt)
                     dstfilep = os.path.join(dstdp, txt)
                     shutil.copyfile(filep, dstfilep)
-    ''' 
-    statistics(tcp_train, 80)
-    statistics(tcp_label, 36)
+
+    statistics(tcp_train, 69)
+    statistics(tcp_label, 33)
     
     #allfileL = glob.glob(tcp + '*.txt')
     #print len(allfileL)
@@ -97,5 +99,5 @@ def labelDoubleline():
 
 if __name__ == '__main__':
     #combine TCP-3G and TCP-4G
-    #main()
-    labelDoubleline()
+    main()
+    #labelDoubleline()

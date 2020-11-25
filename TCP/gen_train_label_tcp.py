@@ -112,7 +112,23 @@ def main(root, datadir, p):
     statistics(dst_labelpath, label_dir, 1)
 
 if __name__ == '__main__':
-    root = '/home/wanwenkai/sourceData/TCP'
-    datadir = 'first24h-30s-doubleline-54level'
-    p = 0.67   #2/3
-    main(root, datadir, p)
+    #root = '/home/wanwenkai/sourceData/TCP'
+    #datadir = 'first24h-30s-doubleline-54level'
+    #p = 0.67   #2/3
+    #main(root, datadir, p)
+    double = '/home/wanwenkai/sourceData/TCP/first84h/first84h-30s-label-doubleline'
+    single = '/home/wanwenkai/sourceData/TCP/first84h/first84h-30s-36level-label'
+    dL = range(36)
+    for d in dL:
+        downlink = 'downlink_' + str(d*100000)
+        print downlink
+        double_d = os.path.join(double, downlink)
+        single_d = os.path.join(single, downlink)
+        if not os.path.exists(single_d):
+            os.makedirs(single_d)
+        
+        for txt in os.listdir(double_d):
+            print txt
+            double_txt = os.path.join(double_d, txt)
+            single_txt = os.path.join(single_d, txt)
+            double_to_single(double_txt, single_txt)
