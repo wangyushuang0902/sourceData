@@ -1,5 +1,6 @@
 import shutil
 import os
+import numpy as np
 
 def keepRuntime(filespath, files):
     sum_b = 0.0
@@ -167,6 +168,8 @@ def cutSession(runtime, datap, cuted_session):
     print '   cut is done!'
    
 def getFirst(providerp, firstp, cut_ftime):
+    providerp = os.path.join(origin, provider)
+    
     cuted = os.path.join(firstp, 'oricuted')
     
     if not os.path.exists(cuted):
@@ -201,8 +204,8 @@ def divideLevel(sto_dirp, double_nolevel):
     asetL = ['train', 'label']
     #for aset in os.listdir(double_nolevel):
     for aset in asetL:
-        #if aset == 'train':
-        #    continue
+        if aset == 'label':
+            break
         print 'This is %s, please wait patiently!' % aset
         fileL = []
         bdL = []
@@ -214,6 +217,8 @@ def divideLevel(sto_dirp, double_nolevel):
             bd = countbd(filep)
             fileL.append(filep)
             bdL.append(bd)
+        print 'train set avg bandwidth = %.2f' % np.mean(bdL)
+
         levelnum = int(max(bdL)/unitLevel)
 
         div_set = sto_dirp.split('/')[-2]+'-'+str(session)+'s-'+str(levelnum)+'level-'+ aset
@@ -289,19 +294,23 @@ if __name__ == '__main__':
     provider = 'TCP-3G'
     cut_ftime = 84  #h
     
+    #/home/wanwenkai/origin-trace/TCP-3G
     ori_pro = os.path.join(origin, provider)
     
     sto_p = os.path.join(root, provider)
-    sto_ftn = 'first' + str(cut_ftime) + 'h-not-filter'
+    sto_ftn = 'first' + str(cut_ftime)+'h'
+    #/home/wanwenkai/sourceData/TCP-3G/first84h
     sto_ft = os.path.join(sto_p, sto_ftn)
     
-    session = 60  #s
+    session = 10  #s
     sto_sess = os.path.join(sto_ft, str(session)+'s')
+    
     cuted_sessn = 'first'+str(cut_ftime)+'h-'+str(session)+'s-nolevel-doubleline'
+    #/home/wanwenkai/sourceData/TCP-3G/first84h/30s/first84h-30s-nolevel-doubleline
     cuted_sess = os.path.join(sto_sess, cuted_sessn)
    
     #please separate run the function as following
     
-    #getFirst(ori_pro, sto_ft, cut_ftime)
+    #getFirst(origin, provider, sto_ft, cut_ftime)
     #cutSession(session, sto_ft, cuted_sess)
     divideLevel(sto_sess, cuted_sess)

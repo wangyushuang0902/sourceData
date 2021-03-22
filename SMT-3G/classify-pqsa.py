@@ -214,6 +214,6 @@ if __name__ == '__main__':
     datap = '/home/wanwenkai/sourceData/SMT-3G/verify_sourceData_new/' 
     temp = '/home/wanwenkai/sourceData/SMT-3G/first24h-30s-doubleline-nolevel/'
     #please separate run the function as following
-    #getFirst24h(datap)
+    getFirst24h(datap)
     #cut(30, datap, temp)
-    divideLevel(temp)
+    #divideLevel(temp)
